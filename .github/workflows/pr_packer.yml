@@ -1,0 +1,57 @@
+name: PR Packer
+on: pull_request_target
+
+env:
+  NAME: "EnhancedArmamentsReloadBeams-#${{ github.event.number }}"
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    name: Pack
+
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Chmod
+        run: chmod +x ./gradlew
+
+      - name: Pack
+        run: "./gradlew -PinputVersion=#${{ github.event.number }} jar"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.NAME }}
+          path: build/libs/${{ env.NAME }}.jar
+
+      - name: Find Comment
+        id: find_comment
+        uses: peter-evans/find-comment@v2
+        with:
+          issue-number: ${{ github.event.number }}
+          comment-author: github-actions[bot]
+          direction: first
+
+      - name: Create Comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.number }}
+          body: 在 [这里](../actions/runs/${{ github.run_id }}) 下载此 PR 的最新打包。
+        if: steps.find_comment.outputs.comment-id == 0
+
+      - name: Update Comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          body: 在 [这里](../actions/runs/${{ github.run_id }}) 下载此 PR 的最新打包。
+          edit-mode: replace
+        if: steps.find_comment.outputs.comment-id != 0
