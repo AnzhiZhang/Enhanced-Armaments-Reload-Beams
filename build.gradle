@@ -18,7 +18,7 @@ apply plugin: 'net.minecraftforge.gradle'
 if (project.hasProperty('inputVersion')) {
     version = project.inputVersion
 } else {
-    version = '1.18.2-1.0.0'
+    version = '1.18.2-1.0.1'
 }
 group = 'com.zhanganzhi.enhancedarmamentsreloadbeams' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'EnhancedArmamentsReloadBeams'
