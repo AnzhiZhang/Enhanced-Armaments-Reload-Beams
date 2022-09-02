@@ -1,11 +1,10 @@
 package com.example.enhancedarmamentsreloadbeams;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
-
-import java.util.Objects;
 
 @Mod("enhancedarmamentsreloadbeams")
 public class EnhancedArmamentsReloadBeams {
@@ -16,10 +15,15 @@ public class EnhancedArmamentsReloadBeams {
     }
 
     @SubscribeEvent
-    public void onServerStarting(ItemTossEvent event) {
-        int rarity = Objects.requireNonNull(event.getEntityItem().getItem().getTag()).getInt("RARITY");
-        if (0 <= rarity && rarity <= 6) {
-            event.getEntityItem().getItem().getTag().putString("lootbeams.color", raritiesMap[rarity]);
+    public void onItemTossEvent(ItemTossEvent event) {
+        CompoundTag tags = event.getEntityItem().getItem().getTag();
+        System.out.println(tags);
+        if (tags != null) {
+            int rarity = tags.getInt("RARITY");
+            System.out.println(rarity);
+            if (0 <= rarity && rarity <= 6) {
+                tags.putString("lootbeams.color", raritiesMap[rarity]);
+            }
         }
     }
 }
